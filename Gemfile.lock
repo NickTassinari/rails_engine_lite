@@ -90,6 +90,13 @@ GEM
     diff-lcs (1.5.0)
     docile (1.4.0)
     erubi (1.12.0)
+    factory_bot (6.2.1)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.2.0)
+      factory_bot (~> 6.2.0)
+      railties (>= 5.0.0)
+    faker (3.2.0)
+      i18n (>= 1.8.11, < 2)
     globalid (1.1.0)
       activesupport (>= 5.0)
     i18n (1.14.1)
@@ -97,6 +104,8 @@ GEM
     io-console (0.6.0)
     irb (1.7.1)
       reline (>= 0.3.0)
+    jsonapi-serializer (2.2.0)
+      activesupport (>= 4.2)
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -216,6 +225,9 @@ DEPENDENCIES
   bootsnap
   capybara
   debug
+  factory_bot_rails
+  faker
+  jsonapi-serializer
   orderly
   pg (~> 1.1)
   pry
