@@ -70,6 +70,29 @@ RSpec.describe "Items API" do
     expect{Item.find(jaguar.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
+  it "can update existing item" do 
+    merchant = Merchant.create!(name: "Target")
+    jaguar = Item.create!( name: "Fender Jaguar",
+      description: "offset, single coil pickups, guitar",
+      unit_price: 400.99,
+      merchant_id: merchant.id)
+    
+    edit_params = {  name: "Fender Jazzmaster",
+      description: "offset, flat single coil pickups, guitar",
+      unit_price: 1300.50,
+      merchant_id: merchant.id}
+
+    headers = {"CONTENT_TYPE" => "application/json"}
+    
+    patch "/api/v1/items/#{jaguar.id}", headers: headers, params: JSON.generate({item: edit_params})
+
+    item = Item.find_by(id: jaguar.id)
+
+    expect(response).to be_successful
+    expect(item.name).to_not eq("Fender Jaguar")
+    expect(item.name).to eq("Fender Jazzmaster")
+  end
+
 
 
 

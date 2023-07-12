@@ -1,6 +1,7 @@
 module Api 
   module V1 
     class ItemsController < ApplicationController
+
       def index 
         render json: ItemSerializer.new(Item.all)
       end
@@ -13,9 +14,12 @@ module Api
         render json: ItemSerializer.new(Item.create!(item_params)), status: 201
       end
 
+      def update 
+        render json: ItemSerializer.new(Item.update(params[:id], item_params))
+      end
+
       def destroy 
-        item = Item.find(params[:id])
-        render json: item.destroy 
+        render json: ItemSerializer.new(Item.destroy(params[:id]))
       end
 
       private 
