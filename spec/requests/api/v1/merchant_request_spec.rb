@@ -92,4 +92,18 @@ describe "Merchant API" do
     expect(response.status).to eq(404)
     expect(merchant[:data]).to eq(nil)
   end
+
+  it "returns empty array if match is not found" do 
+    merchant_1 = Merchant.create!(name: "Sam Ash")
+    merchant_2 = Merchant.create!(name: "Sweet Water")
+
+    get "/api/v1/merchants/find?name=guitar"
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+    expect(merchant[:data][:id]).to eq(nil)
+
+  end
 end
