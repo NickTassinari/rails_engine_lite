@@ -42,4 +42,54 @@ describe "Merchant API" do
     
     merchants = JSON.parse(response.body, symbolize_names: true)
   end
+
+
+  it "can find a merchant based on search" do 
+    merchant_1 = Merchant.create!(name: "Sam Ash")
+    merchant_2 = Merchant.create!(name: "Sweet Water")
+
+    get "/api/v1/merchants/find?name=Sam"
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+
+    expect(merchant[:data][:attributes]).to be_a(Hash)
+    expect(merchant[:data][:attributes]).to have_key(:name)
+    expect(merchant[:data][:attributes][:name]).to be_a(String)
+    expect(merchant[:data][:attributes][:name]).to eq(merchant_1.name)
+    expect(merchant[:data][:attributes][:name]).to_not eq(merchant_2.name)
+  end
+  
+  it "can find a merchant based on partial match search" do 
+    merchant_1 = Merchant.create!(name: "Sam Ash")
+    merchant_2 = Merchant.create!(name: "Sweet Water")
+
+    get "/api/v1/merchants/find?name=wee"
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+
+    expect(merchant[:data][:attributes]).to be_a(Hash)
+    expect(merchant[:data][:attributes]).to have_key(:name)
+    expect(merchant[:data][:attributes][:name]).to be_a(String)
+    expect(merchant[:data][:attributes][:name]).to eq(merchant_2.name)
+    expect(merchant[:data][:attributes][:name]).to_not eq(merchant_1.name)
+  end
+
+  it "returns 404 error if search is invalid" do 
+    merchant_1 = Merchant.create!(name: "Sam Ash")
+    merchant_2 = Merchant.create!(name: "Sweet Water")
+
+    get "/api/v1/merchants/find?name="
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+    expect(merchant[:data]).to eq(nil)
+  end
 end

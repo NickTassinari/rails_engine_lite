@@ -137,8 +137,16 @@ RSpec.describe "Items API" do
 
     get "/api/v1/items/#{jaguar.id}/merchant"
 
+    item = JSON.parse(response.body, symbolize_names: true)
+
     expect(response).to be_successful
     expect(response.status).to eq(200)
+    expect(item).to have_key(:data)
+    expect(item[:data]).to be_a(Hash)
+    expect(item[:data][:attributes]).to have_key(:name)
+    expect(item[:data][:attributes][:name]).to be_a(String)
+    expect(item[:data][:attributes][:name]).to eq(merchant.name)
+    expect(item[:data][:id].to_i).to eq(merchant.id)
   end
 
   describe "sad path tests" do 
