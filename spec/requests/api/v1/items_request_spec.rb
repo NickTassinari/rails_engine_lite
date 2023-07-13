@@ -16,8 +16,22 @@ RSpec.describe "Items API" do
     items = JSON.parse(response.body, symbolize_names: true)
 
     expect(items[:data]).to be_an(Array)
+    expect(items[:data][0][:attributes]).to have_key(:name)
     expect(items[:data][0][:attributes][:name]).to be_a(String)
     expect(items[:data][0][:attributes][:name]).to eq("item 9")
+
+    expect(items[:data][0][:attributes]).to have_key(:description)
+    expect(items[:data][0][:attributes][:description]).to be_a(String)
+    expect(items[:data][0][:attributes][:description]).to eq("illegal")
+
+    expect(items[:data][0][:attributes]).to have_key(:unit_price)
+    expect(items[:data][0][:attributes][:unit_price]).to be_a(Float)
+    expect(items[:data][0][:attributes][:unit_price]).to eq(9.75)
+
+    expect(items[:data][0][:attributes]).to have_key(:merchant_id)
+    expect(items[:data][0][:attributes][:merchant_id]).to be_a(Integer)
+    expect(items[:data][0][:attributes][:merchant_id]).to eq(merchant.id)
+
     expect(items[:data][1][:attributes][:name]).to eq("item 10")
     expect(items[:data].count).to eq(2)
   end
@@ -83,7 +97,7 @@ RSpec.describe "Items API" do
       merchant_id: merchant.id}
 
     headers = {"CONTENT_TYPE" => "application/json"}
-    
+
     patch "/api/v1/items/#{jaguar.id}", headers: headers, params: JSON.generate({item: edit_params})
 
     item = Item.find_by(id: jaguar.id)
@@ -91,6 +105,55 @@ RSpec.describe "Items API" do
     expect(response).to be_successful
     expect(item.name).to_not eq("Fender Jaguar")
     expect(item.name).to eq("Fender Jazzmaster")
+  end
+
+  it "can update item with partial information" do 
+    merchant = Merchant.create!(name: "Target")
+    jaguar = Item.create!( name: "Fender Jaguar",
+      description: "offset, single coil pickups, guitar",
+      unit_price: 400.99,
+      merchant_id: merchant.id)
+    
+    edit_params = {  name: "Fender Jazzmaster",
+      description: "offset, flat single coil pickups, guitar"}
+
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    patch "/api/v1/items/#{jaguar.id}", headers: headers, params: JSON.generate({item: edit_params})
+
+    item = Item.find_by(id: jaguar.id)
+
+    expect(response).to be_successful
+    expect(item.name).to_not eq("Fender Jaguar")
+    expect(item.name).to eq("Fender Jazzmaster")
+  end
+
+  it "can get an items merchant info" do 
+    merchant = Merchant.create!(name: "Target")
+    jaguar = Item.create!( name: "Fender Jaguar",
+      description: "offset, single coil pickups, guitar",
+      unit_price: 400.99,
+      merchant_id: merchant.id)
+
+    get "/api/v1/items/#{jaguar.id}/merchant"
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+  end
+
+  describe "sad path tests" do 
+    xit "returns 404 for wrong merchant id" do 
+      merchant = Merchant.create!(name: "Target")
+      jaguar = Item.create!( name: "Fender Jaguar",
+      description: "offset, single coil pickups, guitar",
+      unit_price: 400.99,
+      merchant_id: 500)
+
+      get "/api/v1/items"
+
+        expect(response).to_not be_successful
+        expect(response.status).to eq(404)
+    end
   end
 
 
