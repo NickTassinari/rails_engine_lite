@@ -30,7 +30,7 @@ module Api
         if item.save
           render json: ItemSerializer.new(Item.update(params[:id], item_params))
         else
-          render :status => 400
+          render(status: 404)
         end
       end
 

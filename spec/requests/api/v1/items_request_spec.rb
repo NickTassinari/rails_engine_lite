@@ -153,14 +153,22 @@ RSpec.describe "Items API" do
     xit "returns 404 for wrong merchant id" do 
       merchant = Merchant.create!(name: "Target")
       jaguar = Item.create!( name: "Fender Jaguar",
-      description: "offset, single coil pickups, guitar",
-      unit_price: 400.99,
-      merchant_id: 500)
+                            description: "offset, single coil pickups, guitar",
+                            unit_price: 400.99,
+                            merchant_id: merchant.id)
 
-      get "/api/v1/items"
+      edit_params = {  name: "Fender Jazzmaster",
+        description: "offset, flat single coil pickups, guitar",
+        unit_price: 500.00,
+        merchant_id: 500
+      }
+
+      headers = {"CONTENT_TYPE" => "application/json"}
+      patch "/api/v1/items/#{jaguar.id}", headers: headers, params: JSON.generate({item: edit_params})
 
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
+        expect(Merchant.find(500)).to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
