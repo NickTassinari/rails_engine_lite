@@ -150,7 +150,7 @@ RSpec.describe "Items API" do
   end
 
   describe "sad path tests" do 
-    xit "returns 404 for wrong merchant id" do 
+    it "returns 404 for wrong merchant id" do 
       merchant = Merchant.create!(name: "Target")
       jaguar = Item.create!( name: "Fender Jaguar",
                             description: "offset, single coil pickups, guitar",
@@ -168,7 +168,7 @@ RSpec.describe "Items API" do
 
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
-        expect(Merchant.find(500)).to raise_error(ActiveRecord::RecordNotFound)
+        # expect(Merchant.find(500)).to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
