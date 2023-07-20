@@ -9,7 +9,11 @@ Rails.application.routes.draw do
 
       get "/merchants/find", to: "merchants/search#search"
       get "/items/find_all", to: "items/search#index"
-
+      # get "/revenue/merchants/", to: "revenue/merchants#index"
+      # get "/revenue/merchants?quantity=:x", to: "revenue/merchants#index"
+      namespace :revenue do 
+        resources :merchants, only: [:index], constraints: { quantity: /\d+/ }
+      end
       resources :merchants, only: [:index, :show] do 
         resources :items, only: [:index], controller: "merchants/items"
     
@@ -17,6 +21,8 @@ Rails.application.routes.draw do
       resources :items do 
         resources :merchant, only: [:index], controller: "items/merchant"
       end
+
+
     end 
 
 
